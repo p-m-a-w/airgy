@@ -3,7 +3,6 @@
 // https://www.arduitronics.com/product/1679/esp32-wroom-development-board-with-built-in-oled-wifi-bluetooth-free-pin-header
 
 
-
 #include <PubSubClient.h>
 
 #include <ETH.h>
@@ -38,9 +37,6 @@
 #define COMMAND_TOPIC "airgy-command"
 #define PORT_DEFAULT 1883
 
-#include "SSD1306Wire.h" // legacy include: `#include "SSD1306.h"`
-SSD1306Wire  display(0x3c, 5, 4);
-
 
 //
 // Note: This example uses Neopixel LED board, 24 LEDs chained one
@@ -70,11 +66,6 @@ SSD1306Wire  display(0x3c, 5, 4);
 rmt_data_t led_data[NR_OF_ALL_BITS];
 rmt_obj_t* rmt_send = NULL;
 
-// const char* ssid = "anthony";
-// const char* password =  "chiangmai";
-// const char* mqttServer = "broker.hivemq.com";
-// const int mqttPort = 1883;
-
 int pm25=0;
 int newMQTTValue=false;
 
@@ -93,10 +84,7 @@ void setup()
 
     float realTick = rmtSetTick(rmt_send, 100);
     Serial.printf("real tick set to: %fns\n", realTick);
-
-    display.init();
-    display.setContrast(255);
-
+    
     connectWifi();
     connectMQTT();
 
@@ -134,7 +122,6 @@ void reconnectMQTT() {
   // Loop until we're reconnected
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
-    print2Display("Connecting MQTT");
     // Create a random client ID
     String clientId = "ESP32Client-";
     clientId += String(random(0xffff), HEX);
@@ -225,7 +212,7 @@ uint32_t getColor(int R, int G, int B) {
 }
 
 /// Has to change here ///
-// Returns the RGB color given the PM2.5 level, based on Us
+// Returns the RGB color given the PM2.5 level, based on us
 uint32_t PM_Color(int pm25Value) {
 
   if (pm25Value < 30) {
