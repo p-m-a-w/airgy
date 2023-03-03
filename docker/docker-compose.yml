@@ -1,0 +1,25 @@
+version: '3'
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    volumes:
+      - homeassistant-config:/config
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+  mqtt:
+    container_name: mosquitto
+    image: "eclipse-mosquitto"
+    volumes:
+      - mosquitto-config:/mosquitto
+      - mosquitto-credentials:/etc/mosquitto
+    restart: unless-stopped
+    ports:
+      - 1883:1883
+volumes:
+  homeassistant-config:
+  mosquitto-config:
+  mosquitto-credentials:
+  
