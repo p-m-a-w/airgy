@@ -212,18 +212,18 @@ uint32_t getColor(int R, int G, int B) {
 }
 
 /// Has to change here ///
-// Returns the RGB color given the PM2.5 level, based on us
+// Returns the RGB color given the PM2.5 level, based on US AQI
 uint32_t PM_Color(int pm25Value) {
 
-  if (pm25Value < 30) {
+  if (pm25Value < 50) {
     return(getColor(0,PixelBrightness,0)); // green
-  } else if (pm25Value < 50) {
+  } else if (pm25Value < 100) {
     return(getColor(PixelBrightness,PixelBrightness,0));  // yellow
-  } else if (pm25Value < 80) {
+  } else if (pm25Value < 150) {
     return(getColor(PixelBrightness,PixelBrightness/4,0));  // Orange
-  } else if (pm25Value < 120) {
+  } else if (pm25Value < 200) {
     return(getColor(PixelBrightness,0,0));  // red
-  } else if (pm25Value < 180) {
+  } else if (pm25Value < 300) {
     return(getColor(PixelBrightness,0,PixelBrightness));  // purple
   } else  {
     return(getColor(0,0,PixelBrightness));  // brown
