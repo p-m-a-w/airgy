@@ -1,6 +1,7 @@
 #include <WiFi.h>
 #include <MQTT.h>
 #include <esp_wifi.h>
+#include <Adafruit_NeoPixel.h>
 
 #define DEBUG
 #define APP_NAME "pm-module"
@@ -12,17 +13,12 @@
 #define TOPIC_DEFAULT "default-pm-module"
 #define PORT_DEFAULT 1883
 
-#include <Adafruit_NeoPixel.h>
-
-// Which pin on the Arduino is connected to the NeoPixels?
-// On a Trinket or Gemma we suggest changing this to 1:
-#define LED_PIN    12
-
-// How many NeoPixels are attached to the Arduino?
+#define MAX_PM25 270
+#define MIN_PM25 0
+#define DELAY 30
+#define LED_PIN 12
 #define LED_COUNT 24
 
-// Declare our NeoPixel strip object:
-Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 const char mqtt_client_id[] = "pm-module-demo";
 String ssid;
@@ -36,6 +32,8 @@ WiFiClient net;
 MQTTClient client;
 
 unsigned long lastMillis = 0;
+
+Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 void connect() {
 #ifdef DEBUG
@@ -83,6 +81,34 @@ void setup() {
   strip.setBrightness(50);  // Set BRIGHTNESS to about 1/5 (max = 255)
 }
 
+
+uint32_t getColor(int pm25Value) {
+  if (pm25Value < 13) {
+    return (strip.Color(0, 255, 0));  // green
+  } else if (pm25Value < 36) {
+    return (strip.Color(255, 255, 0));  // yellow
+  } else if (pm25Value < 56) {
+    return (strip.Color(255, 64, 0));  // Orange
+  } else if (pm25Value < 151) {
+    return (strip.Color(255, 0, 0));  // red
+  } else if (pm25Value < 251) {
+    return (strip.Color(255, 0, 255));  // purple
+  } else {
+    return (strip.Color(255,248,220));  // brown
+  }
+}
+
+void setPMStatus() {
+  int p = pm25;
+  uint32_t color = getColor(pm25);
+  for (int i = 0; i < LED_COUNT; i++) {
+    strip.setPixelColor(i, p > 0 ? color : 0);
+    strip.show();
+    delay(DELAY);
+    p -= (MAX_PM25 - MIN_PM25) / LED_COUNT;
+  }
+}
+
 void loop() {
   client.loop();
   delay(10);  // <- fixes some issues with WiFi stability
@@ -90,6 +116,5 @@ void loop() {
   if (!client.connected()) {
     connect();
   }
-  strip.setPixelColor(1, strip.Color(pm25, 0, 0));
-  strip.show();
+  setPMStatus();
 }
