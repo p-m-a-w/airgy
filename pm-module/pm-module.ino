@@ -12,7 +12,17 @@
 #define TOPIC_DEFAULT "default-pm-module"
 #define PORT_DEFAULT 1883
 
-#define LED 12
+#include <Adafruit_NeoPixel.h>
+
+// Which pin on the Arduino is connected to the NeoPixels?
+// On a Trinket or Gemma we suggest changing this to 1:
+#define LED_PIN    12
+
+// How many NeoPixels are attached to the Arduino?
+#define LED_COUNT 24
+
+// Declare our NeoPixel strip object:
+Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 const char mqtt_client_id[] = "pm-module-demo";
 String ssid;
@@ -20,6 +30,7 @@ String pass;
 String mqtt_broker;
 String mqtt_topic;
 int mqtt_port;
+int pm25 = 0;
 
 WiFiClient net;
 MQTTClient client;
@@ -51,6 +62,7 @@ void messageReceived(String &topic, String &payload) {
 #ifdef DEBUG
   Serial.println("incoming: " + topic + " - " + payload);
 #endif
+  pm25 = payload.toInt();
 }
 
 void setup() {
@@ -65,6 +77,10 @@ void setup() {
   client.onMessage(messageReceived);
 
   connect();
+
+  strip.begin();            // INITIALIZE NeoPixel strip object (REQUIRED)
+  strip.show();             // Turn OFF all pixels ASAP
+  strip.setBrightness(50);  // Set BRIGHTNESS to about 1/5 (max = 255)
 }
 
 void loop() {
@@ -74,4 +90,6 @@ void loop() {
   if (!client.connected()) {
     connect();
   }
+  strip.setPixelColor(1, strip.Color(pm25, 0, 0));
+  strip.show();
 }
