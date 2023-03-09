@@ -81,17 +81,17 @@ void setup() {
   strip.setBrightness(50);  // Set BRIGHTNESS to about 1/5 (max = 255)
 }
 
-
+// PM25 value based on US AQI
 uint32_t getColor(int pm25Value) {
-  if (pm25Value < 13) {
+  if (pm25Value < 50) {
     return (strip.Color(0, 255, 0));  // green
-  } else if (pm25Value < 36) {
+  } else if (pm25Value < 100) {
     return (strip.Color(255, 255, 0));  // yellow
-  } else if (pm25Value < 56) {
+  } else if (pm25Value < 150) {
     return (strip.Color(255, 64, 0));  // Orange
-  } else if (pm25Value < 151) {
+  } else if (pm25Value < 200) {
     return (strip.Color(255, 0, 0));  // red
-  } else if (pm25Value < 251) {
+  } else if (pm25Value < 300) {
     return (strip.Color(255, 0, 255));  // purple
   } else {
     return (strip.Color(255,248,220));  // brown
