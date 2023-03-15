@@ -94,11 +94,11 @@ uint32_t getColor(int pm25Value) {
   } else if (pm25Value < 300) {
     return (strip.Color(255, 0, 255));  // purple
   } else {
-    return (strip.Color(255,248,220));  // brown
+    return (strip.Color(255,248,220));  // blue                                          
   }
 }
 
-void setPMStatus() {
+void setPMStatus() {// set LED depend on PM2.5 value
   int p = pm25;
   uint32_t color = getColor(pm25);
   for (int i = 0; i < LED_COUNT; i++) {
